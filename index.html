@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="module" src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.esm.js"></script>
 <script nomodule src="https://cdn.jsdelivr.net/npm/@ionic/core/dist/ionic/ionic.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@ionic/core/css/ionic.bundle.css"/>
@@ -23,7 +24,7 @@
             </ion-toolbar>
           </ion-header>
 
-          <ion-content  class="ion-padding">
+          <ion-content fullscreen class="ion-padding">
             <div align="center">
               <div align="left" id="content"><ion-card><div align="center"><img src="./madison.jpg" id="img" /></div><ion-card-header><ion-card-subtitle id="subreddit">Destination</ion-card-subtitle><ion-card-title id="title">Madison, WI</ion-card-title></ion-card-header><ion-card-content id="author">Founded in 1829 on an isthmus between Lake Monona and Lake Mendota, Madison was named the capital of theWisconsin Territory in 1836.</ion-card-content></ion-card></div>
                   <ion-button onclick="window.location.reload()"><ion-icon name="add-outline" slot="start"></ion-icon>Get</ion-button>
@@ -39,7 +40,7 @@
             </ion-toolbar>
           </ion-header>
 
-          <ion-content class="ion-padding">
+          <ion-content fullscreen class="ion-padding">
             <ion-button color="danger" id="delete">Delete collection</ion-button>
             <div id="best"></div>
           </ion-content>
@@ -65,6 +66,70 @@
       </ion-tabs>
 
       </ion-app>
-    <script src="app.js"></script>
+    <script>
+      const API = 'https://meme-api.herokuapp.com/gimme'
+var main = document.getElementById("main")
+
+async function get() {
+    const res = await fetch(API)
+    const data = await res.json()
+    console.log(data)
+    var subreddit = document.getElementById("subreddit")
+    var title = document.getElementById("title")
+    var author = document.getElementById("author")
+    var img = document.getElementById("img")
+    img.src = data.url
+    title.innerHTML = data.title
+    author.innerHTML = data.author
+    subreddit.innerHTML = data.subreddit
+    
+  }
+  get()
+  document.getElementById("star").addEventListener("click" , function(){
+    var content = document.getElementById("content")
+    var best = document.getElementById("best")
+    var data = localStorage.getItem("data")
+    if(data){
+      //exist
+      if(data.includes(content.innerHTML)){
+        alert("This meme is already in your collection")
+      } else{
+        if (confirm('Are you sure you want to save this thing into the database?')) {
+          // Save it!
+          
+          localStorage.setItem("data", data + content.innerHTML)
+          best.innerHTML = data
+        } else {
+          // Do nothing!
+          alert('Thing was not saved to the database.');
+        }
+        
+      }
+    } else{
+      if (confirm('Are you sure you want to save this thing into the database?')) {
+        // Save it!
+      
+        localStorage.setItem("data", content.innerHTML)
+        best.innerHTML = data
+      } else {
+        // Do nothing!
+        alert('Thing was not saved to the database.');
+      }
+    }
+  })
+
+  window.addEventListener("load",function(){
+    var best = document.getElementById("best")
+    var data = localStorage.getItem("data")
+    best.innerHTML = data
+  })
+  document.getElementById("delete").addEventListener("click",function(){
+    localStorage.removeItem("data")
+    document.getElementById("best").innerHTML = ""
+    alert("Information deleted")
+  })
+
+
+    </script>
 </body>
 </html>
